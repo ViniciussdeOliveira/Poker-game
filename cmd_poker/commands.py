@@ -1,5 +1,41 @@
 import random
-import os
+
+def quantidade_jogadores():
+    while True:
+        try:
+            qtd = int(input("Quantos jogadores deseja ter na mesa? (max.: 8) "))
+            if qtd > 0 and qtd < 9:
+                return qtd
+            else:
+                print("Por favor, insira um número maior que 0.")
+        except ValueError:
+            print("Entrada inválida. Por favor, insira um número inteiro.")
+
+def criar_bots(qtd_bots):
+    return [f"BOT-{i+1}" for i in range(qtd_bots)]
+
+def cadastrar_jogadores(qtd_jogadores):
+    nomes = []
+    qtd_nomes = 0
+    while qtd_nomes < qtd_jogadores:
+        nome = str(input(f"Jogador {qtd_nomes+1}: ")).strip()
+        if nome:
+            nomes.append(nome)
+            qtd_nomes+=1
+
+            if qtd_jogadores - qtd_nomes != 0:
+                print(f"Restam {qtd_jogadores - qtd_nomes} vaga(s)!")
+                opcao = str(input("Deseja adicionar outro jogador (S/N)?")).strip().upper()
+                if opcao == "N":
+                    break
+            else:
+                print("Todos os lugares já foram ocupados!")
+        else:
+            print("Nome invalido!")
+    
+    qtd_bots = qtd_jogadores - qtd_nomes
+    nomes.extend(criar_bots(qtd_bots))
+    return nomes
 
 class Carta:
     def __init__(self, valor, naipe):
@@ -10,11 +46,11 @@ class Carta:
         return f'{self.valor}{self.naipe}'
 
 class Baralho:
-    naipe = ['♠', '♥', '♦', '♣']
-    valor = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
+    NAIPES = ['♠', '♥', '♦', '♣']
+    VALORES = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
 
     def __init__(self):
-        self.cartas = [Carta(valor,naipe) for valor in Baralho.valor for naipe in Baralho.naipe]
+        self.cartas = [Carta(valor,naipe) for valor in Baralho.VALORES for naipe in Baralho.NAIPES]
     
     def embaralhar(self):
         random.shuffle(self.cartas)
@@ -31,55 +67,22 @@ class Jogador:
         return ' '.join(map(str, self.mao))
 
 def main():
-# %%%%%%%%%%%%%%%%%%%%%%% VARIAVEIS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%%%%%%%%%%%%%%%%%%%%%% CADASTRO DOS JOGADORES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    qtd_jogadores = quantidade_jogadores()
+    print("Digite o nome dos jogadores (O restante será Bot)")
+    nomes_jogadores = cadastrar_jogadores(qtd_jogadores)
 
-    nomes = []
-    opcao = 's'
-    QTD_nomes = 0
-
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# %%%%%%%%%%%%%%%%%%%%%%% PARTE DE CADASTRO DOS JOGADORES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    print("Quantos jogadores deseja ter na mesa ?") 
-    print("(Obs.: Se 2 pessoas forem jogar e tiver 5 na mesa, o excedente será BOT)")
-    QTD_jogadores = int(input("Quantidade: "))
-
-    print("Digite o nome dos jogadores")
-    while opcao.upper() != "N" and QTD_nomes < QTD_jogadores:
-        nome = str(input(f"Jogador {QTD_nomes+1}: "))
-        nomes.append(nome)
-        QTD_nomes+=1
-
-        if QTD_jogadores - QTD_nomes != 0:
-            print(f"Restam {QTD_jogadores - QTD_nomes} vaga(s)!")
-            opcao = str(input("Deseja adicionar outro jogador (S/N)?"))
-        else:
-            print("Todos os lugares já foram ocupados!")
-    
-    QTD_bots = QTD_jogadores - QTD_nomes
-    for i in range(QTD_bots):
-        bot = (f"BOT-{i+1}")
-        nomes.append(str(bot))
-
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# %%%%%%%%%%%%%%%%%%%%%%%%% CRIACAO DA MESA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%%%%%%%%%%%%%%%%%%%%%%%% Teste  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     deck = Baralho()
     deck.embaralhar()
-    player = [Jogador(str(name)) for name in nomes]
+    print(deck.cartas)
+    player = [Jogador(str(name)) for name in nomes_jogadores]
     for _ in range(2):
         for play in player:
             play.receber_mao(deck.cartas)
     for p in player:
         print(f"Nome: {p.nome} - MAO: {p.mostrar_mao()}")
+    print(deck.cartas)
 
 if __name__ == "__main__":
     main()
-
-# TODO: Features e upgrades
-#    - Melhorar o código existente
-#    - Criar a mesa (Reunir os jogadores e distribuir cartas para o jogo)
-#    - Adicionar as regras de vitória
-#    - Criar o jogar novamente
-#    - Criar as fases de aposta
-#    - fazer com que os bots também apostem (Pensar em uma lógica que permita uma boa esperiência para o usuário)
-#    - Colocar um limitador para 8 pessoas
