@@ -1,18 +1,16 @@
 import random
+import os
 
 def quantidade_jogadores():
     while True:
         try:
             qtd = int(input("Quantos jogadores deseja ter na mesa? (max.: 8) "))
-            if qtd > 0 and qtd < 9:
+            if 0 < qtd <= 8:
                 return qtd
             else:
-                print("Por favor, insira um número maior que 0.")
+                print("Por favor, insira um número maior que 0 e menor ou igual a 8!")
         except ValueError:
             print("Entrada inválida. Por favor, insira um número inteiro.")
-
-def criar_bots(qtd_bots):
-    return [f"BOT-{i+1}" for i in range(qtd_bots)]
 
 def cadastrar_jogadores(qtd_jogadores):
     nomes = []
@@ -25,7 +23,7 @@ def cadastrar_jogadores(qtd_jogadores):
 
             if qtd_jogadores - qtd_nomes != 0:
                 print(f"Restam {qtd_jogadores - qtd_nomes} vaga(s)!")
-                opcao = str(input("Deseja adicionar outro jogador (S/N)?")).strip().upper()
+                opcao = str(input("Deseja adicionar outro jogador (S/N)? ")).strip().upper()
                 if opcao == "N":
                     break
             else:
@@ -34,7 +32,7 @@ def cadastrar_jogadores(qtd_jogadores):
             print("Nome invalido!")
     
     qtd_bots = qtd_jogadores - qtd_nomes
-    nomes.extend(criar_bots(qtd_bots))
+    nomes.extend([f"BOT-{i+1}" for i in range(qtd_bots)])
     return nomes
 
 class Carta:
@@ -51,9 +49,13 @@ class Baralho:
 
     def __init__(self):
         self.cartas = [Carta(valor,naipe) for valor in Baralho.VALORES for naipe in Baralho.NAIPES]
+        self.embaralhar()
     
     def embaralhar(self):
         random.shuffle(self.cartas)
+    
+    def dar_carta(self):
+        return self.cartas.pop(0)
 
 class Jogador:
     def __init__(self, nome):
@@ -61,28 +63,107 @@ class Jogador:
         self.mao = []
     
     def receber_mao(self,carta):
-            self.mao.append(carta.pop(0))
+            self.mao.append(carta)
     
     def mostrar_mao(self):
         return ' '.join(map(str, self.mao))
 
-def main():
-# %%%%%%%%%%%%%%%%%%%%%%% CADASTRO DOS JOGADORES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+class Mesa:
+    def __init__(self,nomes_jogadores):                
+        self.player = [Jogador(name) for name in nomes_jogadores]
+        self.deck = Baralho()
+        self.mesa = []
+    
+    def distribuir_cartas(self):
+        for _ in range(2):
+            for jogador in self.player:
+                jogador.receber_mao(self.deck.dar_carta())
+    
+    def mostar_mao_geral(self):
+        for jogador in self.player:
+            print(f"Nome: {jogador.nome} - MAO: {jogador.mostrar_mao()}")
+    
+    def mostar_mao_especifica(self,numero):
+        print(f"MAO: {self.player[numero].mostrar_mao()}")
+    
+    def flop(self):
+        descarte = self.deck.dar_carta()
+        for _ in range(3):
+            self.mesa.append(self.deck.dar_carta())
+        print(' '.join(map(str, self.mesa)))
+    
+    def turn(self):
+        descarte = self.deck.dar_carta()
+        self.mesa.append(self.deck.dar_carta())
+        print(' '.join(map(str, self.mesa)))
+
+    def river(self):
+        descarte = self.deck.dar_carta()
+        self.mesa.append(self.deck.dar_carta())
+        print(' '.join(map(str, self.mesa)))
+
+def Jogar_Poker():
+    opcao = "S"
+
     qtd_jogadores = quantidade_jogadores()
     print("Digite o nome dos jogadores (O restante será Bot)")
     nomes_jogadores = cadastrar_jogadores(qtd_jogadores)
 
-# %%%%%%%%%%%%%%%%%%%%%%%%% Teste  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    deck = Baralho()
-    deck.embaralhar()
-    print(deck.cartas)
-    player = [Jogador(str(name)) for name in nomes_jogadores]
-    for _ in range(2):
-        for play in player:
-            play.receber_mao(deck.cartas)
-    for p in player:
-        print(f"Nome: {p.nome} - MAO: {p.mostrar_mao()}")
-    print(deck.cartas)
+    qtd_nomes_jogadores = 0
+    for i in range(len(nomes_jogadores)):
+        if "BOT" not in nomes_jogadores[i]:
+            qtd_nomes_jogadores += 1
+
+    while opcao != "N":
+        x = Mesa(nomes_jogadores)
+        x.distribuir_cartas()
+
+        for i in range(qtd_nomes_jogadores):
+            os.system("cls")
+            lixo = input(f"Precione qualquer tecla para mostrar a mão do jogador {x.player[i].nome}.")
+            x.mostar_mao_especifica(i)
+            lixo = input(f"Precione qualquer tecla para continuar.")
+            os.system("cls")
+        
+        print("Fase do Flop")
+        x.flop()
+        for i in range(qtd_nomes_jogadores):
+            lixo = input(f"Precione qualquer tecla para mostrar a mão do jogador {x.player[i].nome}.")
+            x.mostar_mao_especifica(i)
+            print(f"Mesa Flop: {' '.join(map(str, x.mesa))}")
+            lixo = input(f"Precione qualquer tecla para continuar.")
+            os.system("cls")
+
+        print("Fase do Turn")
+        x.turn()
+        for i in range(qtd_nomes_jogadores):
+            lixo = input(f"Precione qualquer tecla para mostrar a mão do jogador {x.player[i].nome}.")
+            x.mostar_mao_especifica(i)
+            print(f"Mesa Turn: {' '.join(map(str, x.mesa))}")
+            lixo = input(f"Precione qualquer tecla para continuar.")
+            os.system("cls")
+
+        print("Fase do River")
+        x.river()
+        for i in range(qtd_nomes_jogadores):
+            lixo = input(f"Precione qualquer tecla para mostrar a mão do jogador {x.player[i].nome}.")
+            x.mostar_mao_especifica(i)
+            print(f"Mesa River: {' '.join(map(str, x.mesa))}")
+            lixo = input(f"Precione qualquer tecla para continuar.")
+            os.system("cls")
+        
+        x.mostar_mao_geral()
+        print(f"Mesa Final: {' '.join(map(str, x.mesa))}")
+        print("Vencedor: Em construção...")
+
+        lixo = input(f"Precione qualquer tecla para continuar.")
+        os.system("cls")
+
+        opcao = input("Deseja jogar novamente com os mesmos jogadores (S/N)? ").strip().upper()
+        
+
+def main():
+    Jogar_Poker()
 
 if __name__ == "__main__":
     main()
