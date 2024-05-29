@@ -1,2 +1,2 @@
 # Poker-game
-Projeto Pessoal
+README em construção
