@@ -34,7 +34,7 @@ Este é o jogo de poker desenvolvido para dispositivos móveis, podendo jogar em
 Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ## Considerações
-Caso tenha alguma sugestão de melhoria, encontrou algum Bug ou queira comenta, reporte por meio de issue ou comente na issue `#12: Comments`
+Caso tenha alguma sugestão de melhoria, encontrou algum Bug ou queira comenta, reporte por meio de issue ou comente na issue `#12: Comments`. Se for possível, considere dar uma estrela para o repositório.
 
 ---
 
@@ -73,4 +73,4 @@ This is the poker game developed for mobile devices, allowing you to play at a t
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for more details.
 
 ## Considerations
-If you have any suggestions for improvement, found any bugs, or want to comment, please report them through an issue or comment on issue `#12: Comments`.
+If you have any suggestions for improvement, found any bugs, or want to comment, please report them through an issue or comment on issue `#12: Comments`. If possible, consider giving a star to the repository.
