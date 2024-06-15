@@ -5,6 +5,7 @@
 
 from .utils import quantidade_jogadores, cadastrar_jogadores, limpar_tela
 from .mesa import Mesa
+from .regras import verificar, verificar_vencedor
 
 def Jogar_Poker():
     opcao = "S"
@@ -57,15 +58,23 @@ def Jogar_Poker():
             input(f"Precione qualquer tecla para continuar.")
             limpar_tela()
         
+        for jogador in mesa.player:
+            maoGeral = jogador.mao + mesa.mesa
+            valor = [value.valor for value in maoGeral]
+            naipe = [suit.naipe for suit in maoGeral]
+            jogador.forca = verificar(valor,naipe)
+
+        vencedor = verificar_vencedor(mesa.player)
+        
         mesa.mostar_mao_geral()
         print(f"Mesa Final: {' '.join(map(str, mesa.mesa))}")
-        print("Vencedor: Em construção...")
+        print("Vencedor: " + vencedor)
 
         input(f"Precione qualquer tecla para continuar.")
         limpar_tela()
 
         mesa.resetar_mesa()
 
-        opcao = input("Deseja jogar novamente com os mesmos jogadores (S/N)? ").strip().upper()
+        opcao = input("Pressione enter para continuar ou digite 'n' para sair ").strip().upper()
     
     print("Thanks for playing!")

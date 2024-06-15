@@ -7,6 +7,7 @@ class Jogador:
     def __init__(self, nome):
         self.nome = nome
         self.mao = []
+        self.forca = None
     
     def receber_mao(self,carta):
         self.mao.append(carta)

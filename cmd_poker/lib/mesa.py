@@ -19,7 +19,7 @@ class Mesa:
     
     def mostar_mao_geral(self):
         for jogador in self.player:
-            print(f"Nome: {jogador.nome} - MAO: {jogador.mostrar_mao()}")
+            print(f"Nome: {jogador.nome} - MAO: {jogador.mostrar_mao()} - Força: {jogador.forca}")
     
     def mostar_mao_especifica(self,numero):
         print(f"MAO: {self.player[numero].mostrar_mao()}")
